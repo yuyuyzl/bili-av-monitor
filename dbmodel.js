@@ -21,7 +21,12 @@ module.exports=function(sql) {
         expireDate: {
             type: Sequelize.DATE,
             allowNull: true
+        },
+        title:{
+            type:Sequelize.STRING,
+            allowNull:true
         }
+
     }, {
         sequelize: sql, modelName: "monitoring"
     });

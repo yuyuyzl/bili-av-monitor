@@ -37,7 +37,25 @@ function doMonitor(config) {
 
 function monitorDaemon(){
     Monitoring.findAll().then((data)=>{
-        data.forEach(item=>{if((!item.expireDate || item.expireDate>Date.now())&& !intervals[item.av])doMonitor(item)});
+        data.forEach(item=>{
+            if((!item.expireDate || item.expireDate>Date.now())&& !intervals[item.av])doMonitor(item);
+            if(!item.title){
+                //https://api.bilibili.com/x/web-interface/view?aid=74594675
+                rp({
+                    uri: 'https://api.bilibili.com/x/web-interface/view',
+                    qs: {
+                        aid: item.av
+                    },
+                    headers: {
+                        'User-Agent': '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36'
+                    },
+                    json: true
+                }).then(data=>{
+                    item.title=data.data.title;
+                    Monitoring.update({title:data.data.title},{where:{id:item.id}});
+                })
+            }
+        });
         const avs=data.map(d=>d.av);
         Object.keys(intervals).forEach(i=>{
             if(avs.indexOf(i)<0){
