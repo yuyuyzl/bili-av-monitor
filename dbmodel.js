@@ -8,6 +8,9 @@ module.exports=function(sql) {
     class Data extends Model {
     }
 
+    class MonitorUser extends Model{
+    }
+
     Monitoring.init({
         av: {
             type: Sequelize.INTEGER,
@@ -71,7 +74,32 @@ module.exports=function(sql) {
         sequelize: sql, modelName: "data"
     });
 
+    MonitorUser.init({
+        mid:{
+            type: Sequelize.INTEGER,
+            allowNull:false,
+            unique: true
+        },
+        monitorWithinDays:{
+            type: Sequelize.INTEGER,
+            allowNull:false,
+            defaultValue:7
+        },
+        defaultInterval:{
+            type: Sequelize.INTEGER,
+            allowNull:false,
+            defaultValue:300000
+        },
+        interval:{
+            type: Sequelize.INTEGER,
+            allowNull:false,
+            defaultValue:300000
+        },
+    }, {
+        sequelize: sql, modelName: "monitoruser"
+    });
+
     return{
-        Monitoring,Data
+        Monitoring,Data,MonitorUser
     }
 };
