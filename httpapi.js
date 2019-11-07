@@ -1,29 +1,27 @@
 const rp=require("request-promise");
 const conf=require("./config");
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
 const http=require("http");
-const adapter = new FileSync('db.json');
-const db = low(adapter);
 const url=require("url");
+const Sequelize=require('sequelize');
+const dbmodel=require('./dbmodel');
 
-// Set some defaults (required if your JSON file is empty)
-db.defaults({}).write();
+const sql=new Sequelize(conf.sequelize);
+const models=dbmodel(sql);
+const Monitoring=models.Monitoring;
+const Data=models.Data;
 
-let lastRead=Date.now();
-
-http.createServer((req, res) => {
+http.createServer(async (req, res) => {
     const urlobj=url.parse(req.url);
     try {
         const args = {};
-        urlobj.query.split("&").forEach(s => args[s.split('=')[0]] = s.split("=")[1]);
+        if(urlobj.query)urlobj.query.split("&").forEach(s => args[s.split('=')[0]] = s.split("=")[1]);
         const av = urlobj.pathname.split("/").pop();
-        if(Date.now()-lastRead>10000){
-            db.read();
-            lastRead=Date.now();
+        let data;
+        if (av === "monitor") {
+            data = await Monitoring.findAll();
+        } else {
+            data = await Data.findAll({where: {aid: +av}, order: ["time"]});
         }
-        const data = db.get(av).value();
-
         if (data) {
             res.writeHead(200, {
                 "content-type": "text/plain; charset=utf-8",

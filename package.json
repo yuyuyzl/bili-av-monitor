@@ -5,8 +5,11 @@
   "main": "crawler.js",
   "dependencies": {
     "lowdb": "^1.0.0",
+    "mysql": "^2.17.1",
+    "mysql2": "^2.0.0",
     "request": "^2.88.0",
-    "request-promise": "^4.2.5"
+    "request-promise": "^4.2.5",
+    "sequelize": "^5.21.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
