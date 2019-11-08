@@ -5,7 +5,7 @@ const url=require("url");
 const Sequelize=require('sequelize');
 const dbmodel=require('./dbmodel');
 
-const sql=new Sequelize(conf.sequelize);
+const sql=new Sequelize(...conf.sequelize);
 const models=dbmodel(sql);
 const Monitoring=models.Monitoring;
 const Data=models.Data;

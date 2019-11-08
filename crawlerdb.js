@@ -3,7 +3,7 @@ const conf=require("./config");
 const Sequelize=require('sequelize');
 const dbmodel=require('./dbmodel');
 
-const sql=new Sequelize(conf.sequelize);
+const sql=new Sequelize(...conf.sequelize);
 const models=dbmodel(sql);
 const Monitoring=models.Monitoring;
 const Data=models.Data;
@@ -98,7 +98,7 @@ function doMonitorUser(config){
                         title:obj.title,
                         interval:config.defaultInterval,
                         expireDate:new Date(+new Date(obj.created)+config.monitorWithinDays*86400000)
-                    }).catch(e=>{})
+                    }).catch(e=>{console.log(config.mid+" "+obj.aid+" "+e)})
                     console.log(config.mid+" "+obj.aid);
                 }
         });
