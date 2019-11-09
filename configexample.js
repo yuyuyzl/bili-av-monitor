@@ -24,7 +24,10 @@ module.exports= {
         }
     ],
     api: {
-        port: 8088                  //API监听的端口号
+        port: 8088,
+        secret:["secret"],
+        defaultIntervalAV:300000,
+        defaultIntervalUser:300000,
     },
     sequelize: [
         'biliavmonitor',//数据库名

@@ -20,8 +20,26 @@ http.createServer(async (req, res) => {
             if(conf.api.secret.indexOf(args.secret)>=0){
                 switch (args.action) {
                     case "av":{
-
-
+                        await Monitoring.bulkCreate([{
+                            av:args.av,
+                            interval:args.interval?args.interval:conf.api.defaultIntervalAV,
+                            expireDate:new Date(args.expireDate),
+                            title:args.title
+                        }],{updateOnDuplicate:["av","interval","expireDate","title"]}).then(()=>{});
+                        res.writeHead(200, {
+                            "content-type": "text/plain; charset=utf-8",
+                            "Access-Control-Allow-Origin": "*"
+                        });
+                        res.end(JSON.stringify({result:"success"}));
+                        return;
+                    }
+                    case "user":{
+                        await Monitoring.bulkCreate([{
+                            mid:args.mid,
+                            interval:args.interval?args.interval:conf.api.defaultIntervalUser,
+                            monitorWithinDays:args.monitorWithinDays,
+                            defaultInterval:args.defaultInterval
+                        }],{updateOnDuplicate:["mid","monitorWithinDays","defaultInterval","interval"]}).then(()=>{});
                         res.writeHead(200, {
                             "content-type": "text/plain; charset=utf-8",
                             "Access-Control-Allow-Origin": "*"

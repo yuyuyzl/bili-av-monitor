@@ -98,7 +98,7 @@ function doMonitorUser(config){
                         title:obj.title,
                         interval:config.defaultInterval,
                         expireDate:new Date(+new Date(obj.created)+config.monitorWithinDays*86400000)
-                    }).catch(e=>{console.log(config.mid+" "+obj.aid+" "+e)})
+                    }).catch(e=>{console.log(config.mid+" "+obj.aid+" "+e)});
                     console.log(config.mid+" "+obj.aid);
                 }
         });
@@ -130,7 +130,6 @@ function monitorUserDaemon(){
 }
 
 sql.sync().then(()=>{
-    console.log("Success");
     Monitoring.bulkCreate(conf.monitor,{updateOnDuplicate:["av","interval","expireDate","title"]});
     MonitorUser.bulkCreate(conf.monitorUser,{updateOnDuplicate:["mid","monitorWithinDays","defaultInterval","interval"]});
     monitorDaemon();
