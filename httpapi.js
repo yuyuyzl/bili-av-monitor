@@ -23,7 +23,7 @@ http.createServer(async (req, res) => {
                         await Monitoring.bulkCreate([{
                             av:args.av,
                             interval:args.interval?args.interval:conf.api.defaultIntervalAV,
-                            expireDate:new Date(args.expireDate),
+                            expireDate:args.expireDate?new Date(args.expireDate):null,
                             title:args.title
                         }],{updateOnDuplicate:["av","interval","expireDate","title"]}).then(()=>{});
                         res.writeHead(200, {
