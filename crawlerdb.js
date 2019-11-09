@@ -131,8 +131,8 @@ function monitorUserDaemon(){
 
 sql.sync().then(()=>{
     console.log("Success");
-    conf.monitor.forEach(obj=>Monitoring.create(obj).catch(e=>{}));
-    conf.monitorUser.forEach(obj=>MonitorUser.create(obj).catch(e=>{}));
+    Monitoring.bulkCreate(conf.monitor,{updateOnDuplicate:["av","interval","expireDate","title"]});
+    MonitorUser.bulkCreate(conf.monitorUser,{updateOnDuplicate:["mid","monitorWithinDays","defaultInterval","interval"]});
     monitorDaemon();
     setTimeout(monitorUserDaemon,25000);
 });

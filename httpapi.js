@@ -16,6 +16,22 @@ http.createServer(async (req, res) => {
         const args = {};
         if(urlobj.query)urlobj.query.split("&").forEach(s => args[s.split('=')[0]] = s.split("=")[1]);
         const av = urlobj.pathname.split("/").pop();
+        if (av==="action"){
+            if(conf.api.secret.indexOf(args.secret)>=0){
+                switch (args.action) {
+                    case "av":{
+
+
+                        res.writeHead(200, {
+                            "content-type": "text/plain; charset=utf-8",
+                            "Access-Control-Allow-Origin": "*"
+                        });
+                        res.end(JSON.stringify({result:"success"}));
+                        return;
+                    }
+                }
+            }
+        }
         let data;
         if (av === "monitor") {
             data = await Monitoring.findAll();
@@ -34,18 +50,12 @@ http.createServer(async (req, res) => {
                 res.end(JSON.stringify(data.map(obj => args.item.map(key => obj[key]))));
             else
                 res.end(JSON.stringify(data));
-        } else {
-            res.writeHead(404, {
-                "content-type": "text/plain; charset=utf-8",
-                "Access-Control-Allow-Origin": "*"
-            });
-            res.end("404 Not found");
+            return ;
         }
-    }catch (e) {
-        res.writeHead(404, {
-            "content-type": "text/plain; charset=utf-8",
-            "Access-Control-Allow-Origin": "*"
-        });
-        res.end("404 Not found");
-    }
+    }catch (e) {}
+    res.writeHead(404, {
+        "content-type": "text/plain; charset=utf-8",
+        "Access-Control-Allow-Origin": "*"
+    });
+    res.end("404 Not found");
 }).listen(conf.api.port);
