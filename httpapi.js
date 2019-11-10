@@ -53,11 +53,14 @@ http.createServer(async (req, res) => {
         }
         let data;
         if (av === "monitor") {
-            data = await Monitoring.findAll({where:{
-                updatedAt:{
-                    [Op.gte]:args.after?new Date(args.after):new Date(0)
-                }
-            }},{order:[["updatedAt","desc"]]});
+            data = await Monitoring.findAll({
+                where: {
+                    updatedAt: {
+                        [Op.gte]: args.after ? new Date(args.after) : new Date(0)
+                    }
+                },
+                order:[["updatedAt","desc"]]
+            });
         } else {
             data = await Data.findAll({
                 where: {
