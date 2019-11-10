@@ -57,6 +57,9 @@ function monitorDaemon(){
                     },
                     json: true
                 }).then(data=>{
+                    if(!data || !data.data){
+                        Monitoring.update({title:item.title||"",publishDate:item.publishDate||new Date(0)},{where:{id:item.id}});
+                    }
                     if(!item.publishDate){
                         Data.create({
                             aid: item.av,
