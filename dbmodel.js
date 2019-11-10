@@ -25,6 +25,10 @@ module.exports=function(sql) {
             type: Sequelize.DATE,
             allowNull: true
         },
+        publishDate: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
         title:{
             type:Sequelize.STRING,
             allowNull:true

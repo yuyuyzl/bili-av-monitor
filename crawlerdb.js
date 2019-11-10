@@ -45,7 +45,7 @@ function monitorDaemon(){
                 doMonitor(item);
                 console.log("New AV Monitor Task:"+item.av);
             }
-            if(!item.title){
+            if((!item.title)||(!item.publishDate)){
                 //https://api.bilibili.com/x/web-interface/view?aid=74594675
                 rp({
                     uri: 'https://api.bilibili.com/x/web-interface/view',
@@ -57,8 +57,22 @@ function monitorDaemon(){
                     },
                     json: true
                 }).then(data=>{
-                    item.title=data.data.title;
-                    Monitoring.update({title:data.data.title},{where:{id:item.id}});
+                    if(!item.publishDate){
+                        Data.create({
+                            aid: item.av,
+                            "view": 0,
+                            "danmaku": 0,
+                            "reply": 0,
+                            "favorite": 0,
+                            "coin":0,
+                            "share": 0,
+                            "like": 0,
+                            "now_rank": 0,
+                            "his_rank": 0,
+                            "time": new Date(+data.data.pubdate*1000)
+                        })
+                    }
+                    Monitoring.update({title:data.data.title,publishDate:new Date(+data.data.pubdate*1000)},{where:{id:item.id}});
                 })
             }
         });
