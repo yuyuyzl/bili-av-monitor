@@ -22,7 +22,7 @@ http.createServer(async (req, res) => {
                 switch (args.action) {
                     case "av":{
                         await Monitoring.bulkCreate([{
-                            av:args.av,
+                            av:+(""+args.av).match(/[0-9]+/),
                             interval:args.interval?args.interval:conf.api.defaultIntervalAV,
                             expireDate:args.expireDate?new Date(args.expireDate):null,
                             title:args.title

@@ -109,7 +109,7 @@ function doMonitorUser(config){
     }).then(data => {
         data.data.list.vlist.forEach(obj=>{
             if(!intervals[""+obj.aid])
-                if(Date.now()-new Date(obj.created)<config.monitorWithinDays*86400000){
+                if(Date.now()-new Date(obj.created*1000)<config.monitorWithinDays*86400000){
                     Monitoring.create({
                         av:+obj.aid,
                         title:obj.title,
@@ -150,5 +150,5 @@ sql.sync().then(()=>{
     Monitoring.bulkCreate(conf.monitor,{updateOnDuplicate:["av","interval","expireDate","title"]});
     MonitorUser.bulkCreate(conf.monitorUser,{updateOnDuplicate:["mid","monitorWithinDays","defaultInterval","interval"]});
     monitorDaemon();
-    setTimeout(monitorUserDaemon,25000);
+    setTimeout(monitorUserDaemon,5000);
 });
