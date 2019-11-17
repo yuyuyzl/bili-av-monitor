@@ -114,7 +114,7 @@ function doMonitorUser(config){
                         av:+obj.aid,
                         title:obj.title,
                         interval:config.defaultInterval,
-                        expireDate:new Date(+new Date(obj.created)+config.monitorWithinDays*86400000)
+                        expireDate:new Date(+new Date(obj.created*1000)+config.monitorWithinDays*86400000)
                     }).catch(e=>{console.log(config.mid+" "+obj.aid+" "+e)});
                     console.log(config.mid+" "+obj.aid);
                 }
