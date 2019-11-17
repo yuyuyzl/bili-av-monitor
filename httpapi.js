@@ -15,7 +15,7 @@ http.createServer(async (req, res) => {
     const urlobj=url.parse(req.url);
     try {
         const args = {};
-        if(urlobj.query)urlobj.query.split("&").forEach(s => args[s.split('=')[0]] = unescape(s.split("=")[1]));
+        if(urlobj.query)urlobj.query.split("&").forEach(s => args[s.split('=')[0]] = decodeURIComponent(s.split("=")[1]));
         const av = urlobj.pathname.split("/").pop();
         if (av==="action"){
             if(conf.api.secret.indexOf(args.secret)>=0){
