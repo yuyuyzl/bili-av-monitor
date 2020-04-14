@@ -64,7 +64,7 @@ http.createServer(async (req, res) => {
         } else {
             data = await Data.findAll({
                 where: {
-                    aid: +av,
+                    bvid: av,
                     updatedAt: {
                         [Op.gte]: args.after ? new Date(args.after) : new Date(0)
                     }

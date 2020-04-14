@@ -12,28 +12,28 @@ const MonitorUser=models.MonitorUser;
 const intervals={};
 const intervalsUser={};
 function doMonitor(config) {
-    if(!intervals[""+config.av])intervals[""+config.av]=1;
+    if(!intervals[""+config.bvid])intervals[""+config.bvid]=1;
     rp({
         uri: 'https://api.bilibili.com/x/web-interface/archive/stat',
         qs: {
-            aid: config.av
+            bvid: config.bvid
         },
         headers: {
             'User-Agent': '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36'
         },
         json: true
     }).then(data => {
-        delete data.data.bvid;
         delete data.data.no_reprint;
         delete data.data.evaluation;
         delete data.data.argue_msg;
         delete data.data.copyright;
         data.data.time=Date.now();
         Data.create(data.data);
-        console.log(config.av+"\t"+data.data.view+"V\t"+data.data.favorite+"F");
-    }).catch(e => console.log(config.av+" "+e)).finally(() => {
-            //console.log(config.av + " Requested");
-            if(!config.expireDate || config.expireDate>Date.now())intervals[""+config.av]=setTimeout(() => doMonitor(config), config.interval);
+        console.log(config.bvid+"\t"+data.data.view+"V\t"+data.data.favorite+"F");
+    }).catch(e => console.log(config.bvid+" "+e))
+        .finally(() => {
+            //console.log(config.bvid + " Requested");
+            if(!config.expireDate || config.expireDate>Date.now())intervals[""+config.bvid]=setTimeout(() => doMonitor(config), config.interval);
         }
     );
 }
@@ -41,16 +41,16 @@ function doMonitor(config) {
 function monitorDaemon(){
     Monitoring.findAll().then((data)=>{
         data.forEach(item=>{
-            if((!item.expireDate || item.expireDate>Date.now())&& !intervals[""+item.av]){
+            if((!item.expireDate || item.expireDate>Date.now())&& !intervals[""+item.bvid]){
                 doMonitor(item);
-                console.log("New AV Monitor Task:"+item.av);
+                console.log("New AV Monitor Task:"+item.bvid);
             }
             if((!item.title)||(!item.publishDate)){
                 //https://api.bilibili.com/x/web-interface/view?aid=74594675
                 rp({
                     uri: 'https://api.bilibili.com/x/web-interface/view',
                     qs: {
-                        aid: item.av
+                        bvid: item.bvid
                     },
                     headers: {
                         'User-Agent': '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36'
@@ -62,7 +62,7 @@ function monitorDaemon(){
                     }
                     if(!item.publishDate){
                         Data.create({
-                            aid: item.av,
+                            bvid: item.bvid,
                             "view": 0,
                             "danmaku": 0,
                             "reply": 0,
@@ -79,9 +79,9 @@ function monitorDaemon(){
                 })
             }
         });
-        const avs=data.map(d=>d.av);
+        const bvids=data.map(d=>d.bvid);
         Object.keys(intervals).forEach(i=>{
-            if(avs.indexOf(+i)<0){
+            if(bvids.indexOf(i)<0){
                 clearTimeout(intervals[i]);
                 console.log("Removing AV Monitor Task:"+i);
                 delete intervals[i];
@@ -108,15 +108,15 @@ function doMonitorUser(config){
         json: true
     }).then(data => {
         data.data.list.vlist.forEach(obj=>{
-            if(!intervals[""+obj.aid])
+            if(!intervals[""+obj.bvid])
                 if(Date.now()-new Date(obj.created*1000)<config.monitorWithinDays*86400000){
                     Monitoring.create({
-                        av:+obj.aid,
+                        bvid:obj.bvid,
                         title:obj.title,
                         interval:config.defaultInterval,
                         expireDate:new Date(+new Date(obj.created*1000)+config.monitorWithinDays*86400000)
-                    }).catch(e=>{console.log(config.mid+" "+obj.aid+" "+e)});
-                    console.log(config.mid+" "+obj.aid);
+                    }).catch(e=>{console.log(config.mid+" "+obj.bvid+" "+e)});
+                    console.log(config.mid+" "+obj.bvid);
                 }
         });
 
@@ -147,7 +147,7 @@ function monitorUserDaemon(){
 }
 
 sql.sync().then(()=>{
-    Monitoring.bulkCreate(conf.monitor,{updateOnDuplicate:["av","interval","expireDate","title"]});
+    Monitoring.bulkCreate(conf.monitor,{updateOnDuplicate:["bvid","interval","expireDate","title"]});
     MonitorUser.bulkCreate(conf.monitorUser,{updateOnDuplicate:["mid","monitorWithinDays","defaultInterval","interval"]});
     monitorDaemon();
     setTimeout(monitorUserDaemon,5000);

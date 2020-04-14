@@ -12,8 +12,8 @@ module.exports=function(sql) {
     }
 
     Monitoring.init({
-        av: {
-            type: Sequelize.INTEGER,
+        bvid: {
+            type: Sequelize.STRING,
             allowNull: false,
             unique: true
         },
@@ -39,8 +39,8 @@ module.exports=function(sql) {
     });
 
     Data.init({
-        aid: {
-            type: Sequelize.INTEGER,
+        bvid: {
+            type:Sequelize.STRING,
             allowNull: false
         },
         "view": {
